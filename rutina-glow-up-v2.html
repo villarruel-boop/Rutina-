@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Glow Up">
+<title>Glow Up Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Epilogue:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0c;
+  --s1:#121218;
+  --s2:#1a1a22;
+  --s3:#22222e;
+  --border:#2e2e3e;
+  --text:#f2f0ff;
+  --muted:#7070a0;
+  --dim:#3a3a55;
+  --gold:#d4a843;
+  --gold2:#f0c866;
+  --green:#4caf82;
+  --blue:#6ab0ff;
+  --rose:#e07070;
+  --purple:#a87fea;
+  --orange:#f09050;
+}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Epilogue',sans-serif;
+  font-size:14px;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── HEADER ── */
+.hdr{
+  background:var(--s1);
+  border-bottom:1px solid var(--border);
+  padding:14px 18px 12px;
+  flex-shrink:0;
+}
+.hdr-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.hdr-left{}
+.brand{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);font-family:'Syne',sans-serif;font-weight:700;margin-bottom:2px}
+.hdr-title{font-family:'Syne',sans-serif;font-weight:800;font-size:19px;line-height:1.1}
+.hdr-date{font-size:10px;color:var(--muted);margin-top:1px}
+.score-box{text-align:right}
+.score-num{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--gold2);line-height:1}
+.score-lbl{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.pbar-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.pbar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1);width:0%}
+
+/* ── TABS ── */
+.tabs{
+  display:flex;
+  background:var(--s1);
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;
+  scrollbar-width:none;
+  flex-shrink:0;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:10px 16px;
+  font-family:'Syne',sans-serif;
+  font-size:10px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+  transition:all .2s;
+  user-select:none;
+}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* ── SCROLL AREA ── */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.page{display:none;padding:0 0 80px}
+.page.active{display:block}
+
+/* ── STREAK ── */
+.streak-wrap{padding:14px 16px 4px;display:flex;gap:5px;overflow-x:auto;scrollbar-width:none}
+.streak-wrap::-webkit-scrollbar{display:none}
+.sday{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:34px}
+.sdot{width:28px;height:28px;border-radius:7px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s}
+.sdot.done{background:rgba(76,175,130,.2);border-color:var(--green)}
+.sdot.today{border-color:var(--gold);box-shadow:0 0 0 2px rgba(212,168,67,.2)}
+.sday-lbl{font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
+
+/* ── SECTION HEADER ── */
+.sec-hdr{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 16px 8px;
+}
+.sec-badge{
+  font-family:'Syne',sans-serif;font-size:9px;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;white-space:nowrap;
+}
+.badge-am{background:rgba(212,168,67,.15);color:var(--gold);border:1px solid rgba(212,168,67,.25)}
+.badge-work{background:rgba(106,176,255,.15);color:var(--blue);border:1px solid rgba(106,176,255,.25)}
+.badge-pm{background:rgba(76,175,130,.15);color:var(--green);border:1px solid rgba(76,175,130,.25)}
+.badge-night{background:rgba(168,127,234,.15);color:var(--purple);border:1px solid rgba(168,127,234,.25)}
+.badge-week{background:rgba(240,144,80,.15);color:var(--orange);border:1px solid rgba(240,144,80,.25)}
+.badge-once{background:rgba(224,112,112,.15);color:var(--rose);border:1px solid rgba(224,112,112,.25)}
+.sec-line{flex:1;height:1px;background:var(--border)}
+.sec-time{font-size:10px;color:var(--dim);white-space:nowrap}
+
+/* ── TASK ── */
+.tasks{padding:0 16px}
+.task{
+  display:flex;align-items:flex-start;gap:12px;
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:12px;padding:13px 14px;margin-bottom:8px;
+  cursor:pointer;transition:all .18s;
+  user-select:none;position:relative;overflow:hidden;
+}
+.task::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--dim);transition:background .2s}
+.task:active{transform:scale(.99)}
+.task.done{opacity:.5}
+.task.done .task-title{text-decoration:line-through;color:var(--muted)}
+.task.done::before{background:var(--green)!important}
+
+.t-am::before{background:rgba(212,168,67,.4)}
+.t-work::before{background:rgba(106,176,255,.4)}
+.t-pm::before{background:rgba(76,175,130,.4)}
+.t-night::before{background:rgba(168,127,234,.4)}
+.t-week::before{background:rgba(240,144,80,.4)}
+.t-once::before{background:rgba(224,112,112,.4)}
+
+.chk{
+  width:22px;height:22px;border-radius:7px;
+  border:1.5px solid var(--dim);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;transition:all .2s;
+  font-size:12px;
+}
+.task.done .chk{background:var(--green);border-color:var(--green);color:#000}
+
+.task-body{flex:1;min-width:0}
+.task-meta{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap}
+.task-time{font-size:9px;color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.05em}
+.tag{font-size:8px;padding:1px 7px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.tag-skin{background:rgba(106,176,255,.12);color:var(--blue)}
+.tag-hair{background:rgba(168,127,234,.12);color:var(--purple)}
+.tag-body{background:rgba(76,175,130,.12);color:var(--green)}
+.tag-sup{background:rgba(212,168,67,.12);color:var(--gold)}
+.tag-kit{background:rgba(224,112,112,.12);color:var(--rose)}
+.tag-ment{background:rgba(240,144,80,.12);color:var(--orange)}
+
+.task-title{font-size:13.5px;font-weight:500;color:var(--text);margin-bottom:2px;transition:color .2s}
+.task-desc{font-size:11.5px;color:var(--muted);line-height:1.5}
+.task-dur{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;color:var(--dim);white-space:nowrap;margin-top:3px;flex-shrink:0;align-self:flex-end}
+
+/* ── ADD TASK ── */
+.add-wrap{padding:4px 16px 12px}
+.add-btn{
+  width:100%;padding:12px;border-radius:12px;
+  background:transparent;border:1.5px dashed var(--border);
+  color:var(--muted);font-family:'Syne',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.add-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.8);
+  z-index:200;display:flex;align-items:flex-end;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:20px 20px 0 0;padding:24px 20px 40px;
+  width:100%;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-bottom:18px;color:var(--text)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-family:'Syne',sans-serif;font-weight:700}
+.field input,.field select,.field textarea{
+  width:100%;background:var(--s3);border:1px solid var(--border);
+  border-radius:10px;padding:11px 14px;color:var(--text);
+  font-family:'Epilogue',sans-serif;font-size:13px;
+  outline:none;transition:border-color .2s;
+  -webkit-appearance:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold)}
+.field textarea{resize:none;height:70px}
+.field select option{background:var(--s3)}
+.modal-actions{display:flex;gap:10px;margin-top:18px}
+.mbtn{
+  flex:1;padding:13px;border-radius:11px;
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:800;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:none;
+  transition:all .2s;
+}
+.mbtn-save{background:var(--gold);color:#000}
+.mbtn-save:hover{background:var(--gold2)}
+.mbtn-cancel{background:var(--s3);color:var(--muted);border:1px solid var(--border)}
+
+/* ── TASK CONTEXT MENU ── */
+.ctx-menu{
+  position:fixed;z-index:300;
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:14px;padding:6px;min-width:180px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  opacity:0;pointer-events:none;transform:scale(.95);
+  transition:all .15s;
+}
+.ctx-menu.open{opacity:1;pointer-events:all;transform:scale(1)}
+.ctx-item{
+  padding:10px 14px;border-radius:9px;cursor:pointer;
+  font-size:12px;display:flex;align-items:center;gap:10px;
+  transition:background .15s;
+}
+.ctx-item:hover{background:var(--s3)}
+.ctx-item.danger{color:var(--rose)}
+
+/* ── SHOPPING LIST ── */
+.shop-cat{padding:14px 16px 6px}
+.shop-cat-title{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:11px;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--gold);
+  margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.shop-item{
+  display:flex;align-items:flex-start;gap:12px;
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;margin-bottom:7px;
+  cursor:pointer;transition:all .18s;user-select:none;
+}
+.shop-item.got{opacity:.45}
+.shop-item.got .si-name{text-decoration:line-through;color:var(--muted)}
+.si-chk{
+  width:20px;height:20px;border-radius:6px;
+  border:1.5px solid var(--dim);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;font-size:11px;transition:all .2s;
+}
+.shop-item.got .si-chk{background:var(--green);border-color:var(--green);color:#000}
+.si-body{flex:1}
+.si-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.si-sub{font-size:11px;color:var(--muted);line-height:1.4}
+.si-price{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--green);white-space:nowrap;margin-top:1px;flex-shrink:0}
+.total-bar{
+  margin:8px 16px;padding:14px 16px;border-radius:12px;
+  background:var(--s2);border:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.total-lbl{font-size:11px;color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.total-val{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--gold2)}
+
+/* ── BARBER TAB ── */
+.barber-wrap{padding:16px}
+.bcard{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.bcard.top{border-color:rgba(212,168,67,.35);box-shadow:0 0 0 1px rgba(212,168,67,.15)}
+.btop-badge{background:var(--gold);color:#000;font-family:'Syne',sans-serif;font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;padding:5px 14px}
+.bbody{padding:14px}
+.bname{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;margin-bottom:3px}
+.baddr{font-size:11px;color:var(--muted);margin-bottom:10px}
+.bstats{display:flex;gap:16px;margin-bottom:12px}
+.bstat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--gold)}
+.bstat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.bhours{font-size:11px;color:var(--muted);background:var(--s2);padding:8px 12px;border-radius:8px;margin-bottom:10px;line-height:1.6}
+.btip{font-size:11.5px;color:var(--blue);background:rgba(106,176,255,.08);border:1px solid rgba(106,176,255,.15);padding:9px 12px;border-radius:8px;margin-bottom:12px;line-height:1.5}
+.bbtns{display:flex;gap:8px}
+.bbtn{
+  padding:10px 18px;border-radius:9px;font-family:'Syne',sans-serif;
+  font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;
+  border:none;transition:all .2s;
+}
+.bbtn-gold{background:var(--gold);color:#000}
+.bbtn-outline{background:transparent;color:var(--text);border:1px solid var(--border)}
+
+/* ── INSTALL GUIDE ── */
+.install-wrap{padding:16px}
+.install-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.install-num{font-family:'Syne',sans-serif;font-weight:800;font-size:32px;color:var(--border);line-height:1;margin-bottom:6px}
+.install-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);margin-bottom:5px}
+.install-desc{font-size:12px;color:var(--muted);line-height:1.6}
+.install-code{
+  background:var(--s3);border:1px solid var(--border);
+  border-radius:8px;padding:10px 14px;margin-top:8px;
+  font-family:monospace;font-size:12px;color:var(--gold2);
+  word-break:break-all;line-height:1.5;
+}
+.install-tip{
+  background:rgba(76,175,130,.08);border:1px solid rgba(76,175,130,.2);
+  border-radius:10px;padding:12px 14px;font-size:12px;color:var(--green);line-height:1.6;
+  margin-bottom:12px;
+}
+
+/* ── RESET ── */
+.reset-area{padding:4px 16px 16px;text-align:center}
+.reset-btn{
+  padding:10px 24px;border-radius:9px;
+  font-family:'Syne',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+  background:transparent;border:1px solid var(--border);color:var(--dim);transition:all .2s;
+}
+.reset-btn:hover{border-color:var(--rose);color:var(--rose)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.task{animation:fadeUp .25s ease both}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-row">
+    <div class="hdr-left">
+      <div class="brand">Glow Up Protocol</div>
+      <div class="hdr-title" id="hdr-title">Cargando...</div>
+      <div class="hdr-date" id="hdr-date"></div>
+    </div>
+    <div class="score-box">
+      <div class="score-num" id="score-num">0%</div>
+      <div class="score-lbl">hoy</div>
+    </div>
+  </div>
+  <div class="pbar-track"><div class="pbar-fill" id="pbar"></div></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" data-tab="rutina">📅 Rutina</div>
+  <div class="tab" data-tab="semanal">📆 Semanal</div>
+  <div class="tab" data-tab="compras">🛒 Compras</div>
+  <div class="tab" data-tab="barbero">✂️ Barbero</div>
+  <div class="tab" data-tab="instalar">📲 Instalar</div>
+</div>
+
+<!-- SCROLL AREA -->
+<div class="scroll">
+
+<!-- ===== RUTINA ===== -->
+<div class="page active" id="page-rutina">
+  <div class="streak-wrap" id="streak"></div>
+
+  <!-- MAÑANA -->
+  <div class="sec-hdr">
+    <div class="sec-badge badge-am">🌅 Mañana</div>
+    <div class="sec-line"></div>
+    <div class="sec-time">5:30 – 7:00 AM</div>
+  </div>
+  <div class="tasks" id="tasks-am">
+    <div class="task t-am" data-id="am1" data-section="am" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">5:30 AM</span><span class="tag tag-body">Hidratación</span></div>
+        <div class="task-title">Levantarte + 500ml de agua</div>
+        <div class="task-desc">Deja la botella llena en tu buro la noche anterior. Es lo primero antes de todo, incluso antes de bañarte.</div>
+      </div>
+      <div class="task-dur">2 min</div>
+    </div>
+    <div class="task t-am" data-id="am2" data-section="am" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">5:35 AM</span><span class="tag tag-body">Ducha</span></div>
+        <div class="task-title">Ducha — incluye lavado facial dentro</div>
+        <div class="task-desc">Lava la cara con el limpiador en gel dentro de la ducha. El vapor abre poros y mejora absorción del skincare que sigue.</div>
+      </div>
+      <div class="task-dur">10 min</div>
+    </div>
+    <div class="task t-am" data-id="am3" data-section="am" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">5:45 AM</span><span class="tag tag-skin">Skincare</span></div>
+        <div class="task-title">Esperar 2–3 min + Niacinamida</div>
+        <div class="task-desc">Sécate la cara con toalla limpia sin frotar. Espera que se enfríe un poco. Aplica 2–3 gotas de niacinamida, deja actuar 60s.</div>
+      </div>
+      <div class="task-dur">4 min</div>
+    </div>
+    <div class="task t-am" data-id="am4" data-section="am" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">5:49 AM</span><span class="tag tag-skin">Skincare</span></div>
+        <div class="task-title">Protector solar SPF 50+</div>
+        <div class="task-desc">Con la cara ya seca y fría. Dos dedos de cantidad, distribuye uniforme. Nunca salir sin esto.</div>
+      </div>
+      <div class="task-dur">2 min</div>
+    </div>
+    <div class="task t-am" data-id="am5" data-section="am" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">5:51 AM</span><span class="tag tag-hair">Cabello</span></div>
+        <div class="task-title">Definir rizos con crema/gel — pelo aún húmedo</div>
+        <div class="task-desc">Justo después de la ducha es el mejor momento. Distribuye el producto con los dedos, no con peine. Moldea hacia arriba.</div>
+      </div>
+      <div class="task-dur">5 min</div>
+    </div>
+    <div class="task t-am" data-id="am6" data-section="am" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">5:56 AM</span><span class="tag tag-sup">Nutrición</span></div>
+        <div class="task-title">Desayuno + suplementos</div>
+        <div class="task-desc">Proteína + carbohidrato complejo (huevos, avena, yogurt). Con la comida: Vitamina C 500mg + Zinc 15mg.</div>
+      </div>
+      <div class="task-dur">20 min</div>
+    </div>
+    <div class="task t-am" data-id="am7" data-section="am" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">6:20 AM</span><span class="tag tag-body">Postura</span></div>
+        <div class="task-title">Ejercicios de postura — 3 sets rápidos</div>
+        <div class="task-desc">Retracción escapular x15 + Chin tucks x15 + Plancha 30s. Antes de salir. Define jawline con el tiempo.</div>
+      </div>
+      <div class="task-dur">8 min</div>
+    </div>
+    <div class="task t-am" data-id="am8" data-section="am" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">6:35 AM</span><span class="tag tag-body">Salida</span></div>
+        <div class="task-title">Llevar botella de agua (1L) al trabajo</div>
+        <div class="task-desc">Meta: terminarla antes de las 2 PM. Sin teléfono = sin distracciones para olvidarse de tomar agua.</div>
+      </div>
+      <div class="task-dur">1 min</div>
+    </div>
+  </div>
+  <div class="add-wrap"><button class="add-btn" onclick="openModal('am')">＋ Agregar tarea de mañana</button></div>
+
+  <!-- TRABAJO -->
+  <div class="sec-hdr">
+    <div class="sec-badge badge-work">💼 Trabajo</div>
+    <div class="sec-line"></div>
+    <div class="sec-time">7:00 – 5:00 PM</div>
+  </div>
+  <div class="tasks" id="tasks-work">
+    <div class="task t-work" data-id="w1" data-section="work" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">Todo el día</span><span class="tag tag-body">Hidratación</span></div>
+        <div class="task-title">Tomar la botella de 1L antes de las 2 PM</div>
+        <div class="task-desc">Sin teléfono que distraiga, enfócate en el agua. Sip cada 30–40 min. Reduce ojeras en 3–4 semanas.</div>
+      </div>
+      <div class="task-dur">Continuo</div>
+    </div>
+    <div class="task t-work" data-id="w2" data-section="work" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">Cada hora</span><span class="tag tag-body">Postura</span></div>
+        <div class="task-title">Chin tuck + espalda recta consciente</div>
+        <div class="task-desc">Mentón ligeramente hacia adentro. Hombros hacia atrás. Sin teléfono tienes más conciencia corporal.</div>
+      </div>
+      <div class="task-dur">Continuo</div>
+    </div>
+    <div class="task t-work" data-id="w3" data-section="work" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">Comida</span><span class="tag tag-sup">Nutrición</span></div>
+        <div class="task-title">Comida baja en sodio + fruta</div>
+        <div class="task-desc">Evita comida de puesto con mucha sal. El sodio hincha el rostro visiblemente. Lleva snack si puedes.</div>
+      </div>
+      <div class="task-dur">30 min</div>
+    </div>
+  </div>
+  <div class="add-wrap"><button class="add-btn" onclick="openModal('work')">＋ Agregar tarea de trabajo</button></div>
+
+  <!-- TARDE / GYM -->
+  <div class="sec-hdr">
+    <div class="sec-badge badge-pm">💪 Tarde / Gym</div>
+    <div class="sec-line"></div>
+    <div class="sec-time">5:00 – 7:30 PM</div>
+  </div>
+  <div class="tasks" id="tasks-pm">
+    <div class="task t-pm" data-id="pm1" data-section="pm" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">5:00 PM</span><span class="tag tag-body">Hidratación</span></div>
+        <div class="task-title">Tomar 500ml al salir del trabajo</div>
+        <div class="task-desc">Antes del gym. Hidratarte previo al entreno mejora rendimiento y reduce fatiga muscular.</div>
+      </div>
+      <div class="task-dur">2 min</div>
+    </div>
+    <div class="task t-pm" data-id="pm2" data-section="pm" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">5:30 PM</span><span class="tag tag-body">Gym</span></div>
+        <div class="task-title">Sesión de gym — fuerza + déficit calórico</div>
+        <div class="task-desc">Foco: ejercicios compuestos (sentadilla, press, jalón, remo). 45–60 min. No frotar cara con toallas ajenas.</div>
+      </div>
+      <div class="task-dur">60 min</div>
+    </div>
+    <div class="task t-pm" data-id="pm3" data-section="pm" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">6:30 PM</span><span class="tag tag-body">Regreso</span></div>
+        <div class="task-title">Ir directo a casa — ducha inmediata</div>
+        <div class="task-desc">No retrasar la ducha más de 20 min post-gym. El sudor prolongado en cara = poros tapados.</div>
+      </div>
+      <div class="task-dur">20 min</div>
+    </div>
+    <div class="task t-pm" data-id="pm4" data-section="pm" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">7:00 PM</span><span class="tag tag-sup">Nutrición</span></div>
+        <div class="task-title">Cena proteica post-gym</div>
+        <div class="task-desc">Proteína + verduras + carb moderado. Sin sodio extra. Comer antes de las 7:30 PM para digestión antes de dormir.</div>
+      </div>
+      <div class="task-dur">25 min</div>
+    </div>
+  </div>
+  <div class="add-wrap"><button class="add-btn" onclick="openModal('pm')">＋ Agregar tarea de tarde</button></div>
+
+  <!-- NOCHE -->
+  <div class="sec-hdr">
+    <div class="sec-badge badge-night">🌙 Noche</div>
+    <div class="sec-line"></div>
+    <div class="sec-time">7:30 – 9:00 PM</div>
+  </div>
+  <div class="tasks" id="tasks-night">
+    <div class="task t-night" data-id="n1" data-section="night" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">7:30 PM</span><span class="tag tag-skin">Skincare</span></div>
+        <div class="task-title">Doble limpieza facial nocturna</div>
+        <div class="task-desc">1°: toallita micelar para quitar SPF y sudor. 2°: limpiador en gel. Piel limpia = regeneración nocturna real.</div>
+      </div>
+      <div class="task-dur">5 min</div>
+    </div>
+    <div class="task t-night" data-id="n2" data-section="night" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">7:35 PM</span><span class="tag tag-skin">Skincare</span></div>
+        <div class="task-title">Niacinamida + gel de aloe vera</div>
+        <div class="task-desc">Niacinamida (esperar 60s), luego aloe vera como hidratante. Capa fina. Deja actuar toda la noche.</div>
+      </div>
+      <div class="task-dur">3 min</div>
+    </div>
+    <div class="task t-night" data-id="n3" data-section="night" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">7:40 PM</span><span class="tag tag-hair">Cabello</span></div>
+        <div class="task-title">Revisar vello facial — decisión semanal</div>
+        <div class="task-desc">Afeitar limpio O dejar crecer sin tocar. Nunca el punto medio (vello disperso = resta más de lo que suma).</div>
+      </div>
+      <div class="task-dur">5 min</div>
+    </div>
+    <div class="task t-night" data-id="n4" data-section="night" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">8:00 PM</span><span class="tag tag-body">Hidratación</span></div>
+        <div class="task-title">Último vaso de agua + preparar botella de mañana</div>
+        <div class="task-desc">250ml. Llena la botella de 500ml y déjala en el buro. Sistema automático = nunca olvidarlo.</div>
+      </div>
+      <div class="task-dur">2 min</div>
+    </div>
+    <div class="task t-night" data-id="n5" data-section="night" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">8:15 PM</span><span class="tag tag-ment">Sueño</span></div>
+        <div class="task-title">Apagar pantallas — modo descanso</div>
+        <div class="task-desc">Meta: dormido a las 9 PM = 8.5h de sueño. El sueño es el 40% del resultado de la piel y la composición corporal.</div>
+      </div>
+      <div class="task-dur">45 min</div>
+    </div>
+  </div>
+  <div class="add-wrap"><button class="add-btn" onclick="openModal('night')">＋ Agregar tarea de noche</button></div>
+
+  <div class="reset-area"><button class="reset-btn" onclick="resetToday()">↺ Reiniciar día</button></div>
+</div>
+
+<!-- ===== SEMANAL ===== -->
+<div class="page" id="page-semanal">
+  <div class="sec-hdr" style="margin-top:8px">
+    <div class="sec-badge badge-week">📆 Cada semana</div>
+    <div class="sec-line"></div>
+  </div>
+  <div class="tasks" id="tasks-week">
+    <div class="task t-week" data-id="wk1" data-section="week" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">Sábado AM</span><span class="tag tag-skin">Skincare</span></div>
+        <div class="task-title">Exfoliante suave (AHA o scrub)</div>
+        <div class="task-desc">1 vez/semana max. Elimina células muertas y mejora textura. No usar si ya aplicaste niacinamida esa mañana.</div>
+      </div>
+      <div class="task-dur">5 min</div>
+    </div>
+    <div class="task t-week" data-id="wk2" data-section="week" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">Sábado</span><span class="tag tag-hair">Cabello</span></div>
+        <div class="task-title">Deep conditioning para rizos</div>
+        <div class="task-desc">Mascarilla de rizos o acondicionador sin enjuague. Dejarlo 15–20 min. Reduce frizz y mejora definición.</div>
+      </div>
+      <div class="task-dur">20 min</div>
+    </div>
+    <div class="task t-week" data-id="wk3" data-section="week" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">Domingo</span><span class="tag tag-body">Progreso</span></div>
+        <div class="task-title">Foto de progreso — mismo ángulo, sin filtro</div>
+        <div class="task-desc">Frontal + perfil, misma luz, mismo lugar. No compares cada semana — revisa cada 4 semanas.</div>
+      </div>
+      <div class="task-dur">3 min</div>
+    </div>
+    <div class="task t-week" data-id="wk4" data-section="week" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">Fin de semana</span><span class="tag tag-hair">Barbero</span></div>
+        <div class="task-title">Revisión de fade — cada 4–5 semanas</div>
+        <div class="task-desc">El fade pierde forma rápido. Mantenerlo definido es lo que sostiene el look. Agenda con anticipación.</div>
+      </div>
+      <div class="task-dur">45 min</div>
+    </div>
+  </div>
+  <div class="add-wrap"><button class="add-btn" onclick="openModal('week')">＋ Agregar tarea semanal</button></div>
+
+  <div class="sec-hdr">
+    <div class="sec-badge badge-once">🎯 Una sola vez</div>
+    <div class="sec-line"></div>
+  </div>
+  <div class="tasks" id="tasks-once">
+    <div class="task t-once" data-id="oc1" data-section="once" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">Esta semana</span><span class="tag tag-hair">Barbero</span></div>
+        <div class="task-title">Llamar a Obregón Barbería y agendar cita</div>
+        <div class="task-desc">Pedir: fade medio/alto en lados, volumen arriba, sin alisar rizos. Llevar foto de referencia.</div>
+      </div>
+      <div class="task-dur">Llamar hoy</div>
+    </div>
+    <div class="task t-once" data-id="oc2" data-section="once" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">Esta semana</span><span class="tag tag-skin">Compras</span></div>
+        <div class="task-title">Comprar kit de skincare completo</div>
+        <div class="task-desc">Ver lista detallada en pestaña "Compras". ~$450–$550 MXN total. Todo en farmacia o Walmart.</div>
+      </div>
+      <div class="task-dur">1 salida</div>
+    </div>
+    <div class="task t-once" data-id="oc3" data-section="once" oncontextmenu="ctxMenu(event,this)" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-body">
+        <div class="task-meta"><span class="task-time">Esta semana</span><span class="tag tag-body">App</span></div>
+        <div class="task-title">Instalar esta app en pantalla de inicio</div>
+        <div class="task-desc">Ver instrucciones en pestaña "Instalar". Acceso de un tap sin abrir Claude.</div>
+      </div>
+      <div class="task-dur">2 min</div>
+    </div>
+  </div>
+  <div class="add-wrap"><button class="add-btn" onclick="openModal('once')">＋ Agregar tarea única</button></div>
+</div>
+
+<!-- ===== COMPRAS ===== -->
+<div class="page" id="page-compras">
+
+  <div class="total-bar">
+    <div class="total-lbl">💰 Total estimado</div>
+    <div class="total-val" id="total-val">$0 MXN</div>
+  </div>
+
+  <div class="shop-cat">
+    <div class="shop-cat-title"><span>🧴 Skincare Facial</span><span style="color:var(--muted);font-size:10px">~$300 MXN</span></div>
+
+    <div class="shop-item" data-price="80" onclick="toggleShop(this)">
+      <div class="si-chk"></div>
+      <div class="si-body">
+        <div class="si-name">Limpiador facial en gel o espuma</div>
+        <div class="si-sub">Cetaphil Gentle, Neutrogena, o Bioré. Farmacias del Ahorro / Walmart.</div>
+      </div>
+      <div class="si-price">~$80</div>
+    </div>
+    <div class="shop-item" data-price="150" onclick="toggleShop(this)">
+      <div class="si-chk"></div>
+      <div class="si-body">
+        <div class="si-name">Niacinamida 10% — The Ordinary</div>
+        <div class="si-sub">La más efectiva y barata. Amazon MX (~$120–150). También: Anua o Garnier Niacinamida.</div>
+      </div>
+      <div class="si-price">~$150</div>
+    </div>
+    <div class="shop-item" data-price="120" onclick="toggleShop(this)">
+      <div class="si-chk"></div>
+      <div class="si-body">
+        <div class="si-name">Protector solar SPF 50+ facial</div>
+        <div class="si-sub">Neutrogena Ultra Sheer o Isdin Fusion Water. "No comedogénico" en la etiqueta. Obligatorio.</div>
+      </div>
+      <div class="si-price">~$120</div>
+    </div>
+    <div class="shop-item" data-price="45" onclick="toggleShop(this)">
+      <div class="si-chk"></div>
+      <div class="si-body">
+        <div class="si-name">Gel de aloe vera 99% puro</div>
+        <div class="si-sub">Marca Naturt o Seven Wonders. Hidratante nocturno económico y efectivo. Walmart / Similares.</div>
+      </div>
+      <div class="si-price">~$45</div>
+    </div>
+    <div class="shop-item" data-price="50" onclick="toggleShop(this)">
+      <div class="si-chk"></div>
+      <div class="si-body">
+        <div class="si-name">Toallitas micelares (kit gym)</div>
+        <div class="si-sub">Garnier Agua Micelar en toallitas. Para limpiar post-gym si no llegas de inmediato a casa.</div>
+      </div>
+      <div class="si-price">~$50</div>
+    </div>
+  </div>
+
+  <div class="shop-cat">
+    <div class="shop-cat-title"><span>💇 Cabello</span><span style="color:var(--muted);font-size:10px">~$130 MXN</span></div>
+
+    <div class="shop-item" data-price="80" onclick="toggleShop(this)">
+      <div class="si-chk"></div>
+      <div class="si-body">
+        <div class="si-name">Crema o gel definidor de rizos</div>
+        <div class="si-sub">Eco Styler Gel verde (~$50), Garnier Fructis Curl, o Aussie Miracle Curls. Walmart / Chedraui.</div>
+      </div>
+      <div class="si-price">~$80</div>
+    </div>
+    <div class="shop-item" data-price="60" onclick="toggleShop(this)">
+      <div class="si-chk"></div>
+      <div class="si-body">
+        <div class="si-name">Mascarilla / acondicionador para rizos</div>
+        <div class="si-sub">Novex Rizo Divine, OGX Curling o L'Oréal Elvive Rizos. Para el deep conditioning semanal.</div>
+      </div>
+      <div class="si-price">~$60</div>
+    </div>
+  </div>
+
+  <div class="shop-cat">
+    <div class="shop-cat-title"><span>💊 Suplementos</span><span style="color:var(--muted);font-size:10px">~$90 MXN</span></div>
+
+    <div class="shop-item" data-price="50" onclick="toggleShop(this)">
+      <div class="si-chk"></div>
+      <div class="si-body">
+        <div class="si-name">Vitamina C 500mg</div>
+        <div class="si-sub">Farmacias del Ahorro o Similares. Con el desayuno. Mejora síntesis de colágeno y tono de piel.</div>
+      </div>
+      <div class="si-price">~$50</div>
+    </div>
+    <div class="shop-item" data-price="45" onclick="toggleShop(this)">
+      <div class="si-chk"></div>
+      <div class="si-body">
+        <div class="si-name">Zinc 15mg</div>
+        <div class="si-sub">Mismo lugar. Siempre con comida, nunca en ayunas (da náusea). Reduce poros y regula sebo.</div>
+      </div>
+      <div class="si-price">~$45</div>
+    </div>
+  </div>
+
+  <div class="shop-cat">
+    <div class="shop-cat-title"><span>🎒 Esenciales</span><span style="color:var(--muted);font-size:10px">~$80 MXN</span></div>
+
+    <div class="shop-item" data-price="50" onclick="toggleShop(this)">
+      <div class="si-chk"></div>
+      <div class="si-body">
+        <div class="si-name">Botella reutilizable de 1 litro</div>
+        <div class="si-sub">Plástico duro o acero. Para llevar al trabajo y gym. Elimina la excusa de "no tomé agua".</div>
+      </div>
+      <div class="si-price">~$50</div>
+    </div>
+    <div class="shop-item" data-price="30" onclick="toggleShop(this)">
+      <div class="si-chk"></div>
+      <div class="si-body">
+        <div class="si-name">Toalla facial pequeña (x2)</div>
+        <div class="si-sub">Para secar la cara sin frotar. Nunca usar toallas de cuerpo en la cara. Lavar cada 2–3 días.</div>
+      </div>
+      <div class="si-price">~$30</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BARBERO ===== -->
+<div class="page" id="page-barbero">
+  <div class="barber-wrap">
+    <div class="bcard top">
+      <div class="btop-badge">⭐ Recomendación #1</div>
+      <div class="bbody">
+        <div class="bname">Obreg​ón Peluquería y Barbería</div>
+        <div class="baddr">📍 Álvaro Obregón, San Isidro Club, San Juan del Río</div>
+        <div class="bstats">
+          <div><div class="bstat-val">4.9★</div><div class="bstat-lbl">Rating</div></div>
+          <div><div class="bstat-val">141</div><div class="bstat-lbl">Reseñas</div></div>
+          <div><div class="bstat-val">Diario</div><div class="bstat-lbl">Abierto</div></div>
+        </div>
+        <div class="bhours"><strong>Lun–Vie</strong> 10 AM – 9:30 PM &nbsp;·&nbsp; <strong>Sáb</strong> 10 AM – 8 PM &nbsp;·&nbsp; <strong>Dom</strong> 10 AM – 7 PM<br>✅ Abre hasta las 9:30 PM — puedes ir después del gym.</div>
+        <div class="btip">💬 <strong>Qué decirle:</strong> "Fade medio o alto en los lados para reducir el ancho, pero que mantenga el volumen y los rizos arriba. Sin alisar."</div>
+        <div class="bbtns">
+          <a class="bbtn bbtn-gold" href="tel:+524271854139">📞 Llamar</a>
+          <a class="bbtn bbtn-outline" href="https://maps.google.com/?cid=3625787811599112700" target="_blank">🗺 Mapa</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="bcard">
+      <div class="bbody">
+        <div class="bname">Barba Roja Barbershop</div>
+        <div class="baddr">📍 Constituyentes 12, Centro, San Juan del Río</div>
+        <div class="bstats">
+          <div><div class="bstat-val">4.8★</div><div class="bstat-lbl">Rating</div></div>
+          <div><div class="bstat-val">52</div><div class="bstat-lbl">Reseñas</div></div>
+          <div><div class="bstat-val">11–7</div><div class="bstat-lbl">Horario</div></div>
+        </div>
+        <div class="bhours"><strong>Lun–Sáb</strong> 11 AM – 7 PM &nbsp;·&nbsp; <strong>Dom</strong> cerrado<br>⚠️ Cierra a las 7 PM — solo viable el fin de semana con tu horario.</div>
+        <div class="bbtns">
+          <a class="bbtn bbtn-gold" href="tel:+524271583727">📞 Llamar</a>
+          <a class="bbtn bbtn-outline" href="https://maps.google.com/?cid=9398990628140612477" target="_blank">🗺 Mapa</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== INSTALAR ===== -->
+<div class="page" id="page-instalar">
+  <div class="install-wrap">
+    <div class="install-tip">✅ Esta app funciona como PWA — se instala directo en tu pantalla de inicio de Android. Sin Play Store, sin cuenta. Abre instantáneo como app nativa.</div>
+
+    <div class="install-card">
+      <div class="install-num">01</div>
+      <div class="install-title">Abre Chrome en tu Android</div>
+      <div class="install-desc">Esta página debe estar abierta en Google Chrome (no en el navegador de Samsung ni Firefox). Chrome es necesario para la instalación.</div>
+    </div>
+    <div class="install-card">
+      <div class="install-num">02</div>
+      <div class="install-title">Toca el menú de los 3 puntos ⋮</div>
+      <div class="install-desc">Arriba a la derecha de Chrome. Se despliega un menú con opciones.</div>
+    </div>
+    <div class="install-card">
+      <div class="install-num">03</div>
+      <div class="install-title">Selecciona "Añadir a pantalla de inicio"</div>
+      <div class="install-desc">Aparece una opción que dice exactamente eso. Si no aparece, busca "Instalar aplicación" o "Agregar acceso directo".</div>
+    </div>
+    <div class="install-card">
+      <div class="install-num">04</div>
+      <div class="install-title">Ponle nombre y confirma</div>
+      <div class="install-desc">Escribe "Glow Up" o el nombre que quieras. Toca "Añadir" y aparecerá como ícono en tu pantalla de inicio.</div>
+    </div>
+    <div class="install-card">
+      <div class="install-num">05</div>
+      <div class="install-title">Guarda la URL primero</div>
+      <div class="install-desc">Antes de cerrar este chat, copia y guarda esta URL en tus notas para poder abrirla en Chrome:</div>
+      <div class="install-code" id="current-url">Cargando URL...</div>
+    </div>
+
+    <div class="install-tip" style="background:rgba(212,168,67,.08);border-color:rgba(212,168,67,.2);color:var(--gold)">
+      ⚡ Una vez instalada, se abre sin internet de forma básica. Tus tareas completadas se guardan localmente en tu teléfono.
+    </div>
+  </div>
+</div>
+
+</div><!-- end scroll -->
+
+<!-- MODAL AGREGAR TAREA -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-title">Nueva tarea</div>
+    <div class="field">
+      <label>Título</label>
+      <input type="text" id="f-title" placeholder="Ej: Tomar colágeno" maxlength="60">
+    </div>
+    <div class="field">
+      <label>Descripción (opcional)</label>
+      <textarea id="f-desc" placeholder="Detalles, tips, recordatorios..."></textarea>
+    </div>
+    <div class="field">
+      <label>Hora / contexto</label>
+      <input type="text" id="f-time" placeholder="Ej: 6:00 AM, Al llegar, Noche...">
+    </div>
+    <div class="field">
+      <label>Duración</label>
+      <input type="text" id="f-dur" placeholder="Ej: 5 min, 1 hora...">
+    </div>
+    <input type="hidden" id="f-section">
+    <div class="modal-actions">
+      <button class="mbtn mbtn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="mbtn mbtn-save" onclick="saveTask()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div class="ctx-menu" id="ctx-menu">
+  <div class="ctx-item" onclick="editTask()">✏️ Editar tarea</div>
+  <div class="ctx-item danger" onclick="deleteTask()">🗑 Eliminar tarea</div>
+</div>
+
+<script>
+// ─── STORAGE KEYS ───
+const K_DONE   = 'gup_done_v3';
+const K_CUSTOM = 'gup_custom_v3';
+const K_SHOP   = 'gup_shop_v3';
+const K_STREAK = 'gup_streak_v3';
+const K_DATE   = 'gup_date_v3';
+
+// ─── STATE ───
+let done    = load(K_DONE,{});
+let custom  = load(K_CUSTOM,{});  // {section:[{id,title,desc,time,dur}]}
+let shopGot = load(K_SHOP,{});
+let streak  = load(K_STREAK,[]);
+
+let ctxTarget = null;
+let editingId = null;
+
+// ─── UTILS ───
+function load(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch{return def}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+
+function today(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`}
+
+// ─── INIT ───
+function init(){
+  // Reset daily done if new day
+  const lastDate = load(K_DATE,'');
+  if(lastDate !== today()){
+    // Clear only daily tasks (am,work,pm,night), keep semanal/once
+    const toReset = Object.keys(done).filter(id=>['am','w','pm','n'].some(p=>id.startsWith(p)&&!id.startsWith('wk')&&!id.startsWith('oc')));
+    toReset.forEach(id=>delete done[id]);
+    save(K_DONE, done);
+    save(K_DATE, today());
+  }
+
+  renderCustomTasks();
+  applyDone();
+  updateProgress();
+  renderStreak();
+  updateTotal();
+  updateHeader();
+  document.getElementById('current-url').textContent = window.location.href;
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('page-'+t.dataset.tab).classList.add('active');
+      updateProgress();
+    });
+  });
+
+  // Close ctx on outside click
+  document.addEventListener('click', ()=>closeCtx());
+}
+
+// ─── HEADER ───
+function updateHeader(){
+  const days=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const months=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const d=new Date();
+  document.getElementById('hdr-title').textContent = days[d.getDay()];
+  document.getElementById('hdr-date').textContent = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// ─── TOGGLE TASK ───
+function toggleTask(el){
+  const id=el.dataset.id;
+  el.classList.toggle('done');
+  done[id]=el.classList.contains('done');
+  save(K_DONE,done);
+  updateProgress();
+  checkStreak();
+}
+
+function applyDone(){
+  document.querySelectorAll('.task[data-id]').forEach(el=>{
+    if(done[el.dataset.id]) el.classList.add('done');
+    else el.classList.remove('done');
+  });
+}
+
+// ─── PROGRESS ───
+function updateProgress(){
+  const activePage = document.querySelector('.page.active');
+  const all  = activePage ? activePage.querySelectorAll('.task[data-id]') : [];
+  const doneN= Array.from(all).filter(t=>t.classList.contains('done')).length;
+  const pct  = all.length ? Math.round(doneN/all.length*100) : 0;
+  document.getElementById('score-num').textContent = pct+'%';
+  document.getElementById('pbar').style.width = pct+'%';
+}
+
+// ─── STREAK ───
+function checkStreak(){
+  const daily = document.querySelectorAll('#page-rutina .task[data-id]');
+  const doneD = Array.from(daily).filter(t=>t.classList.contains('done')).length;
+  if(doneD >= Math.ceil(daily.length * 0.7)){
+    const t=today();
+    if(!streak.includes(t)){streak.push(t);if(streak.length>21)streak=streak.slice(-21);save(K_STREAK,streak);}
+    renderStreak();
+  }
+}
+
+function renderStreak(){
+  const wrap=document.getElementById('streak');
+  wrap.innerHTML='';
+  const days=['D','L','M','X','J','V','S'];
+  for(let i=13;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const key=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    const isToday=i===0, isDone=streak.includes(key);
+    const div=document.createElement('div'); div.className='sday';
+    const dot=document.createElement('div');
+    dot.className='sdot'+(isDone?' done':'')+(isToday?' today':'');
+    dot.textContent=isDone?'🔥':(isToday?'👤':'·');
+    const lbl=document.createElement('div'); lbl.className='sday-lbl'; lbl.textContent=days[d.getDay()];
+    div.appendChild(dot); div.appendChild(lbl); wrap.appendChild(div);
+  }
+}
+
+// ─── RESET ───
+function resetToday(){
+  if(!confirm('¿Reiniciar todas las tareas de hoy?')) return;
+  Object.keys(done).forEach(id=>{
+    if(['am','w','pm','n'].some(p=>id.startsWith(p)&&!id.startsWith('wk')&&!id.startsWith('oc'))) delete done[id];
+  });
+  save(K_DONE,done);
+  applyDone();
+  updateProgress();
+}
+
+// ─── CUSTOM TASKS ───
+function renderCustomTasks(){
+  Object.keys(custom).forEach(section=>{
+    const container = document.getElementById('tasks-'+section);
+    if(!container) return;
+    custom[section].forEach(task=>appendTaskEl(task,section,container));
+  });
+}
+
+function appendTaskEl(task, section, container){
+  const cls = {am:'t-am',work:'t-work',pm:'t-pm',night:'t-night',week:'t-week',once:'t-once'}[section]||'t-am';
+  const el=document.createElement('div');
+  el.className=`task ${cls}`;
+  el.dataset.id=task.id;
+  el.dataset.section=section;
+  el.setAttribute('oncontextmenu','ctxMenu(event,this)');
+  el.setAttribute('onclick','toggleTask(this)');
+  el.innerHTML=`
+    <div class="chk"></div>
+    <div class="task-body">
+      <div class="task-meta"><span class="task-time">${task.time||''}</span><span class="tag tag-body">Personal</span></div>
+      <div class="task-title">${task.title}</div>
+      ${task.desc?`<div class="task-desc">${task.desc}</div>`:''}
+    </div>
+    <div class="task-dur">${task.dur||''}</div>`;
+  if(done[task.id]) el.classList.add('done');
+  container.appendChild(el);
+}
+
+// ─── MODAL ───
+let currentSection='am';
+function openModal(section){
+  currentSection=section;
+  editingId=null;
+  document.getElementById('f-title').value='';
+  document.getElementById('f-desc').value='';
+  document.getElementById('f-time').value='';
+  document.getElementById('f-dur').value='';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(()=>document.getElementById('f-title').focus(),300);
+}
+
+function closeModal(){ document.getElementById('modal').classList.remove('open'); editingId=null; }
+function closeModalOutside(e){ if(e.target===document.getElementById('modal')) closeModal(); }
+
+function saveTask(){
+  const title=document.getElementById('f-title').value.trim();
+  if(!title) return;
+  const task={
+    id: editingId || 'c_'+Date.now(),
+    title,
+    desc: document.getElementById('f-desc').value.trim(),
+    time: document.getElementById('f-time').value.trim(),
+    dur:  document.getElementById('f-dur').value.trim(),
+  };
+
+  if(editingId){
+    // Update existing
+    const section=ctxTarget?.dataset?.section||currentSection;
+    if(custom[section]){
+      const idx=custom[section].findIndex(t=>t.id===editingId);
+      if(idx>-1){
+        custom[section][idx]=task;
+        const el=document.querySelector(`.task[data-id="${editingId}"]`);
+        if(el){
+          el.querySelector('.task-title').textContent=title;
+          el.querySelector('.task-desc') && (el.querySelector('.task-desc').textContent=task.desc);
+          el.querySelector('.task-time').textContent=task.time;
+          el.querySelector('.task-dur').textContent=task.dur;
+        }
+      }
+    }
+    save(K_CUSTOM,custom);
+  } else {
+    if(!custom[currentSection]) custom[currentSection]=[];
+    custom[currentSection].push(task);
+    save(K_CUSTOM,custom);
+    const container=document.getElementById('tasks-'+currentSection);
+    if(container) appendTaskEl(task,currentSection,container);
+    updateProgress();
+  }
+  closeModal();
+}
+
+// ─── CONTEXT MENU ───
+function ctxMenu(e,el){
+  e.preventDefault();
+  ctxTarget=el;
+  const menu=document.getElementById('ctx-menu');
+  menu.style.top=(e.clientY-10)+'px';
+  menu.style.left=Math.min(e.clientX,window.innerWidth-200)+'px';
+  menu.classList.add('open');
+}
+
+function closeCtx(){ document.getElementById('ctx-menu').classList.remove('open'); }
+
+function editTask(){
+  if(!ctxTarget) return;
+  const id=ctxTarget.dataset.id;
+  const section=ctxTarget.dataset.section;
+  const tasks=custom[section]||[];
+  const task=tasks.find(t=>t.id===id);
+  if(!task){closeCtx();return;} // built-in tasks: skip edit for now
+  editingId=id;
+  currentSection=section;
+  document.getElementById('f-title').value=task.title;
+  document.getElementById('f-desc').value=task.desc||'';
+  document.getElementById('f-time').value=task.time||'';
+  document.getElementById('f-dur').value=task.dur||'';
+  closeCtx();
+  document.getElementById('modal').classList.add('open');
+}
+
+function deleteTask(){
+  if(!ctxTarget) return;
+  const id=ctxTarget.dataset.id;
+  const section=ctxTarget.dataset.section;
+  if(!custom[section]||!custom[section].find(t=>t.id===id)){
+    alert('Solo puedes eliminar tareas que tú mismo agregaste.'); closeCtx(); return;
+  }
+  if(!confirm('¿Eliminar esta tarea?')){closeCtx();return;}
+  custom[section]=custom[section].filter(t=>t.id!==id);
+  save(K_CUSTOM,custom);
+  delete done[id]; save(K_DONE,done);
+  ctxTarget.remove();
+  updateProgress();
+  closeCtx();
+}
+
+// ─── SHOPPING ───
+function toggleShop(el){
+  el.classList.toggle('got');
+  const key=el.querySelector('.si-name').textContent;
+  shopGot[key]=el.classList.contains('got');
+  save(K_SHOP,shopGot);
+  updateTotal();
+}
+
+function updateTotal(){
+  let total=0, remaining=0;
+  document.querySelectorAll('.shop-item').forEach(el=>{
+    const price=parseInt(el.dataset.price)||0;
+    const key=el.querySelector('.si-name').textContent;
+    if(shopGot[key]){el.classList.add('got');}
+    else{remaining+=price;}
+    total+=price;
+  });
+  document.getElementById('total-val').textContent=`$${remaining} MXN`;
+}
+
+// ─── START ───
+init();
+</script>
+</body>
+</html>
